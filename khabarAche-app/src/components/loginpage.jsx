@@ -17,25 +17,28 @@ const LoginPage = () => {
     setError("");
 
     try {
-      const response = await axios.post("http://localhost:4004/api/auth", {
-        email,
-        password,
-      });
+        const response = await axios.post("http://localhost:4004/api/auth", {
+            email,
+            password,
+        });
 
-      if (response.status === 200) {
-        const { username, email } = response.data.user;
-        localStorage.setItem(
-          "user",
-          JSON.stringify({ username, email, isHotelLogin: hotelLogin })
-        );
+        if (response.status === 200) {
+            const { username, email, token } = response.data.user;
 
-        navigate(hotelLogin ? "/userdashboardhotel" : "/userdashboard");
-      }
+            localStorage.setItem(
+                "user",
+                JSON.stringify({ username, email, isHotelLogin: hotelLogin })
+            );
+            localStorage.setItem("token", token); 
+            
+            navigate(hotelLogin ? "/userdashboardhotel" : "/userdashboard");
+        }
     } catch (err) {
-      console.error("Login error:", err);
-      setError(err.response?.data?.message || "Login failed. Try again.");
+        console.error("Login error:", err);
+        setError(err.response?.data?.message || "Login failed. Try again.");
     }
-  };
+};
+
 
   return (
     <div className="loginpage">

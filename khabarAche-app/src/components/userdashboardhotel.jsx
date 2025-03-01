@@ -4,6 +4,7 @@ import "../components/userdashboard.css";
 import "boxicons/css/boxicons.min.css";
 import logo from "../assets/logo.png";
 import heroImage from "../assets/heroImage.png";
+import axios from "axios";
 
 const UserDashboardHotel = () => {
   const [user, setUser] = useState({ username: "", email: "" });
@@ -14,10 +15,14 @@ const UserDashboardHotel = () => {
   const [postData, setPostData] = useState({
     email: "",
     img: "",
+    title: "",
     description: "",
+    price: "",
     address: "",
     additional: "",
   });
+  const [error, setError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,11 +32,13 @@ const UserDashboardHotel = () => {
       setIsHotelLogin(true);
     }
   }, []);
+
   const handleLogout = () => {
     localStorage.removeItem("user");
     setIsLoggedIn(false);
     navigate("/");
   };
+
   const handleCreatePost = () => {
     setIsPostModalOpen(true);
   };
@@ -44,10 +51,62 @@ const UserDashboardHotel = () => {
     setPostData({ ...postData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmitPost = () => {
-    console.log("Post submitted:", postData);
-    setIsPostModalOpen(false);
+  const handleSubmitPost = async () => {
+    if (isFormValid()) {
+      setIsSubmitting(true);
+      try {
+        const token = localStorage.getItem("token"); // Retrieve token from localStorage
+        const headers = token ? { Authorization: `Bearer ${token}` } : {}; // Include token if available
+  
+        const response = await axios.post(
+          "http://localhost:4004/api/post",
+          postData,
+          { headers }
+        );
+  
+        if (response.status === 200) {
+          console.log("Post successful");
+          setPostData({
+            email: "",
+            img: "",
+            title: "",
+            description: "",
+            price: "",
+            address: "",
+            additional: "",
+          });
+          handleCloseModal();
+          alert("Post Created Successfully!");
+        }
+      } catch (err) {
+        console.error("Post error:", err);
+        const errorMessage =
+          err.response?.data?.message || err.message || "An error occurred.";
+        setError(errorMessage);
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
   };
+  
+
+  const isFormValid = () => {
+    return (
+      postData.email &&
+      postData.title &&
+      postData.img &&
+      postData.description &&
+      postData.price &&
+      postData.address
+    );
+  };
+
+  const renderError = (field) => {
+    if (!postData[field]) {
+      return <span className="text-red-500">This field is required</span>;
+    }
+  };
+
   return (
     <div className="userdashboard">
       <input type="checkbox" id="sidebar-toggle" />
@@ -64,7 +123,7 @@ const UserDashboardHotel = () => {
               ></span>
               {dropdownVisible && (
                 <div className="dropdown-menu">
-                 <button onClick={handleCreatePost}>Create Post</button>
+                  <button onClick={handleCreatePost}>Create Post</button>
                   <Link to="/report">Report</Link>
                   <button onClick={handleLogout}>Logout</button>
                 </div>
@@ -164,39 +223,26 @@ const UserDashboardHotel = () => {
           </div>
 
           <div className="cards">
-            {[
-              {
-                title: "Donation",
-                count: 17,
-                desc: "Till now you have encountered 17 donations",
-              },
-              {
-                title: "Purchases",
-                count: 5,
-                desc: "Till now you have got 5 purchased donations",
-              },
-              {
-                title: "Pending-Purchases",
-                count: 12,
-                desc: "Till now you have 12 units of donations pending",
-              },
-            ].map((card, index) => (
-              <div className="card-single" key={index}>
-                <div className="card-flex">
-                  <div className="card-info">
-                    <div className="card-head">
-                      <span>{card.title}</span>
-                      <small>Number of {card.title.toLowerCase()}</small>
+            {[{ title: "Donation", count: 17, desc: "Till now you have encountered 17 donations" },
+              { title: "Purchases", count: 5, desc: "Till now you have got 5 purchased donations" },
+              { title: "Pending-Purchases", count: 12, desc: "Till now you have 12 units of donations pending" }]
+              .map((card, index) => (
+                <div className="card-single" key={index}>
+                  <div className="card-flex">
+                    <div className="card-info">
+                      <div className="card-head">
+                        <span>{card.title}</span>
+                        <small>Number of {card.title.toLowerCase()}</small>
+                      </div>
+                      <h2>{card.count}</h2>
+                      <small>{card.desc}</small>
                     </div>
-                    <h2>{card.count}</h2>
-                    <small>{card.desc}</small>
-                  </div>
-                  <div className="card-chart">
-                    <span className="bx bx-line-chart"></span>
+                    <div className="card-chart">
+                      <span className="bx bx-line-chart"></span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
 
           <div className="jobs-grid">
@@ -211,8 +257,7 @@ const UserDashboardHotel = () => {
                 </div>
                 <div className="analytics-note">
                   <small>
-                    You have the ability to download PDF files that contain
-                    details or records of the donations you have made.
+                    You have the ability to download PDF files that contain details or records of the donations you have made.
                   </small>
                 </div>
               </div>
@@ -232,38 +277,33 @@ const UserDashboardHotel = () => {
               <div className="table-responsive">
                 <table width="100%">
                   <tbody>
-                    {[
-                      { name: "Rafy Bhuiyan", status: "donated" },
+                    {[{ name: "Rafy Bhuiyan", status: "donated" },
                       { name: "Israt Jahan", status: "donate" },
                       { name: "Jerin Neon", status: "donated" },
-                      { name: "Abdur Rahman", status: "donate" },
-                    ].map((donor, index) => (
-                      <tr key={index}>
-                        <td>
-                          <div>
-                            <span
-                              className={`indicator ${
-                                index % 2 === 0 ? "" : "even"
-                              }`}
-                            ></span>
-                          </div>
-                        </td>
-                        <td>
-                          <div>{donor.name}</div>
-                        </td>
-                        <td>
-                          <div>Menu</div>
-                        </td>
-                        <td>
-                          <div>Description</div>
-                        </td>
-                        <td>
-                          <div>
-                            <button>{donor.status}</button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                      { name: "Abdur Rahman", status: "donate" }]
+                      .map((donor, index) => (
+                        <tr key={index}>
+                          <td>
+                            <div>
+                              <span className={`indicator ${index % 2 === 0 ? "" : "even"}`}></span>
+                            </div>
+                          </td>
+                          <td>
+                            <div>{donor.name}</div>
+                          </td>
+                          <td>
+                            <div>Menu</div>
+                          </td>
+                          <td>
+                            <div>Description</div>
+                          </td>
+                          <td>
+                            <div>
+                              <button>{donor.status}</button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
                 </table>
               </div>
@@ -271,43 +311,99 @@ const UserDashboardHotel = () => {
           </div>
         </main>
       </div>
+
       {isPostModalOpen && (
-  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
-    <div className="bg-white p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200">
-      <h2 className="text-xl font-bold mb-4">Create Post</h2>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200">
+            <h2 className="text-xl font-bold mb-4">Create Post</h2>
 
-      <label className="block mb-2">Email:</label>
-      <input type="email" name="email" value={postData.email} onChange={handleChange} className="w-full p-2 border rounded mb-4" />
+            <label className="block mb-2">Email:</label>
+            <input
+              type="email"
+              name="email"
+              value={postData.email}
+              onChange={handleChange}
+              className="w-full p-2 border rounded mb-4"
+            />
+            {renderError("email")}
 
-      <label className="block mb-2">Food Title:</label>
-      <input type="text" name="title" value={postData.title} onChange={handleChange} className="w-full p-2 border rounded mb-4" />
+            <label className="block mb-2">Food Title:</label>
+            <input
+              type="text"
+              name="title"
+              value={postData.title}
+              onChange={handleChange}
+              className="w-full p-2 border rounded mb-4"
+            />
+            {renderError("title")}
 
-      <label className="block mb-2">Image URL:</label>
-      <input type="text" name="img" value={postData.img} onChange={handleChange} className="w-full p-2 border rounded mb-4" />
+            <label className="block mb-2">Image URL:</label>
+            <input
+              type="text"
+              name="img"
+              value={postData.img}
+              onChange={handleChange}
+              className="w-full p-2 border rounded mb-4"
+            />
+            {renderError("img")}
 
-      <label className="block mb-2">Description:</label>
-      <textarea name="description" value={postData.description} onChange={handleChange} className="w-full p-2 border rounded mb-4"></textarea>
+            <label className="block mb-2">Description:</label>
+            <textarea
+              name="description"
+              value={postData.description}
+              onChange={handleChange}
+              className="w-full p-2 border rounded mb-4"
+            ></textarea>
+            {renderError("description")}
 
-      <label className="block mb-2">Price:</label>
-      <input type="text" name="price" value={postData.price} onChange={handleChange} className="w-full p-2 border rounded mb-4" />
+            <label className="block mb-2">Price:</label>
+            <input
+              type="text"
+              name="price"
+              value={postData.price}
+              onChange={handleChange}
+              className="w-full p-2 border rounded mb-4"
+            />
+            {renderError("price")}
 
-      <label className="block mb-2">Address:</label>
-      <input type="text" name="address" value={postData.address} onChange={handleChange} className="w-full p-2 border rounded mb-4" />
+            <label className="block mb-2">Address:</label>
+            <input
+              type="text"
+              name="address"
+              value={postData.address}
+              onChange={handleChange}
+              className="w-full p-2 border rounded mb-4"
+            />
+            {renderError("address")}
 
-      <label className="block mb-2">Additional Info:</label>
-      <textarea name="additional" value={postData.additional} onChange={handleChange} className="w-full p-2 border rounded mb-4"></textarea>
+            <label className="block mb-2">Additional Info:</label>
+            <textarea
+              name="additional"
+              value={postData.additional}
+              onChange={handleChange}
+              className="w-full p-2 border rounded mb-4"
+            ></textarea>
 
-      <div className="flex justify-between">
-        <button onClick={handleCloseModal} className="bg-transparent text-white px-4 py-2 rounded border border-white-700 hover:bg-gray-700 transition-all duration-300">
-          Cancel
-        </button>
-        <button onClick={handleSubmitPost} className="bg-transparent text-white px-4 py-2 rounded border border-white-700 hover:bg-gray-700 transition-all duration-300">
-          Create Post
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+            {error && <div className="text-red-500">{error}</div>}
+
+            <div className="flex justify-between">
+              <button
+                onClick={handleCloseModal}
+                className="bg-transparent text-white px-4 py-2 rounded border border-white-700 hover:bg-gray-700 transition-all duration-300"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmitPost}
+                disabled={isSubmitting || !isFormValid()}
+                className="bg-transparent text-white px-4 py-2 rounded border border-white-700 hover:bg-gray-700 transition-all duration-300"
+              >
+                {isSubmitting ? "Submitting..." : "Create Post"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <label htmlFor="sidebar-toggle" className="userdashboard-label"></label>
       <footer>
