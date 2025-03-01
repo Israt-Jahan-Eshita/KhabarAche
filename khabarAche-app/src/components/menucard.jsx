@@ -9,7 +9,7 @@ const MenuCard = ({ img, title, value, onClick }) => {
       </div>
       <div className="p-2 mt-5">
         <div className="flex flex-row justify-between">
-          <h3 className="font-semibold text-xl">{title}</h3>
+          <h3 className="font-semibold text-xl text-black">{title}</h3>
           <h3 className="font-semibold text-xl">{value}</h3>
         </div>
         <div className="flex flex-col mt-3">

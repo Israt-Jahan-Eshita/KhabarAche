@@ -10,6 +10,14 @@ const UserDashboardHotel = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [isHotelLogin, setIsHotelLogin] = useState(false);
+  const [isPostModalOpen, setIsPostModalOpen] = useState(false);
+  const [postData, setPostData] = useState({
+    email: "",
+    img: "",
+    description: "",
+    address: "",
+    additional: "",
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,6 +31,22 @@ const UserDashboardHotel = () => {
     localStorage.removeItem("user");
     setIsLoggedIn(false);
     navigate("/");
+  };
+  const handleCreatePost = () => {
+    setIsPostModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsPostModalOpen(false);
+  };
+
+  const handleChange = (e) => {
+    setPostData({ ...postData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmitPost = () => {
+    console.log("Post submitted:", postData);
+    setIsPostModalOpen(false);
   };
   return (
     <div className="userdashboard">
@@ -40,7 +64,7 @@ const UserDashboardHotel = () => {
               ></span>
               {dropdownVisible && (
                 <div className="dropdown-menu">
-                  <Link to="/profile">Profile</Link>
+                 <button onClick={handleCreatePost}>Create Post</button>
                   <Link to="/report">Report</Link>
                   <button onClick={handleLogout}>Logout</button>
                 </div>
@@ -247,6 +271,43 @@ const UserDashboardHotel = () => {
           </div>
         </main>
       </div>
+      {isPostModalOpen && (
+  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
+    <div className="bg-white p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200">
+      <h2 className="text-xl font-bold mb-4">Create Post</h2>
+
+      <label className="block mb-2">Email:</label>
+      <input type="email" name="email" value={postData.email} onChange={handleChange} className="w-full p-2 border rounded mb-4" />
+
+      <label className="block mb-2">Food Title:</label>
+      <input type="text" name="title" value={postData.title} onChange={handleChange} className="w-full p-2 border rounded mb-4" />
+
+      <label className="block mb-2">Image URL:</label>
+      <input type="text" name="img" value={postData.img} onChange={handleChange} className="w-full p-2 border rounded mb-4" />
+
+      <label className="block mb-2">Description:</label>
+      <textarea name="description" value={postData.description} onChange={handleChange} className="w-full p-2 border rounded mb-4"></textarea>
+
+      <label className="block mb-2">Price:</label>
+      <input type="text" name="price" value={postData.price} onChange={handleChange} className="w-full p-2 border rounded mb-4" />
+
+      <label className="block mb-2">Address:</label>
+      <input type="text" name="address" value={postData.address} onChange={handleChange} className="w-full p-2 border rounded mb-4" />
+
+      <label className="block mb-2">Additional Info:</label>
+      <textarea name="additional" value={postData.additional} onChange={handleChange} className="w-full p-2 border rounded mb-4"></textarea>
+
+      <div className="flex justify-between">
+        <button onClick={handleCloseModal} className="bg-transparent text-white px-4 py-2 rounded border border-white-700 hover:bg-gray-700 transition-all duration-300">
+          Cancel
+        </button>
+        <button onClick={handleSubmitPost} className="bg-transparent text-white px-4 py-2 rounded border border-white-700 hover:bg-gray-700 transition-all duration-300">
+          Create Post
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
       <label htmlFor="sidebar-toggle" className="userdashboard-label"></label>
       <footer>
