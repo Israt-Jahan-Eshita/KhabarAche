@@ -14,7 +14,7 @@ const UserDashboardHotel = () => {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [postData, setPostData] = useState({
     email: "",
-    img: "",
+    imageURL: "",
     title: "",
     description: "",
     price: "",
@@ -52,42 +52,29 @@ const UserDashboardHotel = () => {
   };
 
   const handleSubmitPost = async () => {
-    if (isFormValid()) {
-      setIsSubmitting(true);
-      try {
-        const token = localStorage.getItem("token"); // Retrieve token from localStorage
-        const headers = token ? { Authorization: `Bearer ${token}` } : {}; // Include token if available
+    if (!isFormValid()) return;
   
-        const response = await axios.post(
-          "http://localhost:4004/api/post",
-          postData,
-          { headers }
-        );
+    setIsSubmitting(true);
+    setError(null);
   
-        if (response.status === 200) {
-          console.log("Post successful");
-          setPostData({
-            email: "",
-            img: "",
-            title: "",
-            description: "",
-            price: "",
-            address: "",
-            additional: "",
-          });
-          handleCloseModal();
-          alert("Post Created Successfully!");
-        }
-      } catch (err) {
-        console.error("Post error:", err);
-        const errorMessage =
-          err.response?.data?.message || err.message || "An error occurred.";
-        setError(errorMessage);
-      } finally {
-        setIsSubmitting(false);
+    try {
+      const response = await axios.post(
+        "http://localhost:4004/api/posts", 
+        postData
+      );
+  
+      if (response.status === 200) {
+        alert("Post Created Successfully!");
+        handleCloseModal();
       }
+    } catch (err) {
+      console.error("Post error:", err);
+      setError(err.response?.data?.message || err.message || "An error occurred.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
+  
   
 
   const isFormValid = () => {

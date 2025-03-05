@@ -6,23 +6,23 @@
     min-height: 100vh;
     background-color: black;
 }
-form
+.form
 {
     max-width: 600px;
     width: 100%;
-    background-color: white;
+    background-color: transparent;
     padding: 25px 25px 25px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, .1);
     color: #333;
     margin: 25px
 }
-form h2
+.form h2
 {
     font-size: 30px;
     text-align: center;
 }
-form .input-nao
+.form .input-nao
 {
     margin: 20px;
 }
@@ -36,7 +36,7 @@ form .input-nao
     border-radius: 6px;
     padding: 15px;
     font-size: 16px;
-    color: #333;
+    color: white;
     margin-top: 8px;
 }
 .input-nao .field.mess
@@ -49,7 +49,7 @@ form button
     width: 100%;
     height: 55px;
     background-color: gray;
-    border: none;
+    border: white;
     border-radius: 6px;
     box-shadow: 0 0 10px rgba(0, 0, 0, .1);
     cursor: pointer;
@@ -59,7 +59,7 @@ form button
     margin-top: 25px;
     transition: 0.5s;
 }
-form button:hover
+.form button:hover
 {
     background: lightblue;
 }

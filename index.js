@@ -4,11 +4,11 @@ import dotenv from "dotenv";
 import cors from "cors";
 import userRoutes from "./routes/users.js";
 import authRoutes from "./routes/auth.js";
-import postRoutes from "./routes/post.js";
+import postRoutes from "./routes/posts.js";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 4004;
+const PORT = process.env.PORT || 4003;
 const URI = process.env.MONGO_URI;
 mongoose.connect(URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log("Database connected"))
@@ -22,7 +22,7 @@ app.use(cors());
 
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/post", postRoutes); 
+app.use("/api/posts", postRoutes); 
 
 // Centralized Error Handling Middleware
 /*app.use((err, req, res, next) => {

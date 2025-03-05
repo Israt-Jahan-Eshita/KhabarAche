@@ -26,7 +26,8 @@ const Menu = () => {
       <h1 className="font-semibold text-center text-4xl mt-24 mb-8">
         Today's Available Foods
       </h1>
-      <div className="relative">
+
+      <div className="relative bg-white p-6 rounded-lg shadow-lg">
         <button
           onClick={() => scroll("left")}
           className="hover:bg-black transition absolute left-0 top-1/2 -translate-y-1/2 bg-white/30 backdrop-blur-lg p-3 rounded-full shadow-lg z-10"
@@ -36,18 +37,16 @@ const Menu = () => {
 
         <motion.div
           ref={scrollRef}
-          className="flex gap-6 overflow-x-auto flex-nowrap scrollbar-hide px-5 py-2 rounded-lg bg-white/20 backdrop-blur-xl shadow-lg"
+          className="flex gap-6 overflow-x-auto flex-nowrap scrollbar-hide px-5 py-2 rounded-lg "
           whileTap={{ cursor: "grabbing" }}
         >
           {[
-            { img: img2, title: "Rice&Currry", value: "Free" },
-            { img: img2, title: "Rice&Currry", value: "Free" },
-            { img: img2, title: "Rice&Currry", value: "$4.49" },
-            { img: img2, title: "Rice&Currry", value: "Free" },
-            { img: img2, title: "Rice&Currry", value: "$3.99" },
-            { img: img2, title: "Rice&Currry", value: "$3.99" },
-            { img: img2, title: "Rice&Currry", value: "Free" },
-            { img: img2, title: "Rice&Currry", value: "Free" },
+            { img: img2, title: "Rice & Curry", value: "Free" },
+            { img: img2, title: "Rice & Curry", value: "$4.49" },
+            { img: img2, title: "Rice & Curry", value: "Free" },
+            { img: img2, title: "Rice & Curry", value: "$3.99" },
+            { img: img2, title: "Rice & Curry", value: "$3.99" },
+            { img: img2, title: "Rice & Curry", value: "Free" },
           ].map((item, index) => (
             <MenuCard key={index} {...item} onClick={() => openModal(item)} />
           ))}
@@ -55,17 +54,19 @@ const Menu = () => {
 
         <button
           onClick={() => scroll("right")}
-          className="hover:bg-black transition absolute right-0 top-1/2 -translate-y-1/2 bg-white/30 backdrop-blur-lg p-3 rounded-full shadow-lg z-10"
+          className="hover:bg-black transition absolute right-0 top-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-lg p-3 rounded-full shadow-lg z-10"
         >
           <FaChevronRight size={24} />
         </button>
       </div>
+
+      
       {selectedItem && (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg lg:w-3/5 max-h-[80vh] overflow-y-auto scrollbar-thin scrollbar-thumb-transparent hover:scrollbar-thumb-gray-900 flex flex-col lg:flex-row items-center lg:items-start relative">
             <button
               onClick={closeModal}
-              className="absolute top-4 right-4 text-black text-2xl hover:text-red-500 transition"
+              className="absolute top-4 right-4 text-white text-2xl hover:text-red-500 transition"
             >
               ✖
             </button>
@@ -76,21 +77,22 @@ const Menu = () => {
             />
             <div className="lg:ml-6 mt-4 lg:mt-0 flex flex-col">
               <h2 className="text-2xl font-bold">{selectedItem.title}</h2>
-              <p className="text-gray-700 mt-2">
-              This is a delicious meal available for order. Enjoy the best taste with fresh ingredients!
+              <p className="text-white mt-2">
+                This is a delicious meal available for order. Enjoy the best taste with fresh ingredients!
               </p>
               <div className="flex justify-between items-center gap-4 mt-4">
                 <div className="flex gap-2">
-                  <button className="px-3 text-sm border-2 border-[#AB6B2E] bg-[#FFDCAB] hover:text-[#AB6B2E] transition-all rounded-lg">
+                  <button className="px-3 text-sm border-2 border-white bg-transparent hover:text-orange-500 transition-all rounded-lg">
                     Like
                   </button>
-                  <button className="px-3 text-sm border-2 border-[#AB6B2E] bg-[#FFDCAB] hover:text-[#AB6B2E] transition-all rounded-lg">
+                  <button className="px-3 text-sm border-2 border-white bg-transparent hover:text-orange-500 transition-all rounded-lg">
                     Comment
                   </button>
                 </div>
-                <span className="bg-[#FFDCAB] px-3 py-2 rounded-full cursor-pointer">
-                  <FaShoppingCart size={20} />
-                </span>
+                <span className="border-2 border-white bg-white hover:text-orange-500 transition-all cursor-pointer p-2 rounded-lg">
+  <FaShoppingCart size={20} />
+</span>
+
               </div>
             </div>
           </div>
