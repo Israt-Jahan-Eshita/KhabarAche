@@ -10,17 +10,17 @@ const UserDashboardHotel = () => {
   const [user, setUser] = useState({ username: "", email: "" });
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const [isHotelLogin, setIsHotelLogin] = useState(false);
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [postData, setPostData] = useState({
     email: "",
-    imageURL: "",
     title: "",
     description: "",
     price: "",
     address: "",
     additional: "",
+    imageURL: "",
   });
+  const [selectedFile, setSelectedFile] = useState(null);
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
@@ -29,7 +29,6 @@ const UserDashboardHotel = () => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser) {
       setUser(storedUser);
-      setIsHotelLogin(true);
     }
   }, []);
 
@@ -39,31 +38,46 @@ const UserDashboardHotel = () => {
     navigate("/");
   };
 
-  const handleCreatePost = () => {
-    setIsPostModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsPostModalOpen(false);
-  };
+  const handleCreatePost = () => setIsPostModalOpen(true);
+  const handleCloseModal = () => setIsPostModalOpen(false);
 
   const handleChange = (e) => {
     setPostData({ ...postData, [e.target.name]: e.target.value });
   };
 
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
   const handleSubmitPost = async () => {
     if (!isFormValid()) return;
-  
+
     setIsSubmitting(true);
     setError(null);
-  
+
     try {
-      const response = await axios.post(
-        "http://localhost:4004/api/posts", 
-        postData
+      let imageURL = "";
+
+      if (selectedFile) {
+        const formData = new FormData();
+        formData.append("image", selectedFile);
+
+        const uploadResponse = await axios.post(
+          "http://localhost:4003/api/upload",
+          formData,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
+
+        imageURL = uploadResponse.data.imageURL;
+      }
+
+      const postResponse = await axios.post(
+        "http://localhost:4003/api/posts",
+        { ...postData, imageURL },
+        { headers: { "Content-Type": "application/json" } }
       );
-  
-      if (response.status === 200) {
+
+      if (postResponse.status === 200) {
         alert("Post Created Successfully!");
         handleCloseModal();
       }
@@ -74,24 +88,11 @@ const UserDashboardHotel = () => {
       setIsSubmitting(false);
     }
   };
-  
-  
 
   const isFormValid = () => {
     return (
-      postData.email &&
-      postData.title &&
-      postData.img &&
-      postData.description &&
-      postData.price &&
-      postData.address
+      Object.values(postData).every((field) => field.trim() !== "") || selectedFile !== null
     );
-  };
-
-  const renderError = (field) => {
-    if (!postData[field]) {
-      return <span className="text-red-500">This field is required</span>;
-    }
   };
 
   return (
@@ -212,24 +213,23 @@ const UserDashboardHotel = () => {
           <div className="cards">
             {[{ title: "Donation", count: 17, desc: "Till now you have encountered 17 donations" },
               { title: "Purchases", count: 5, desc: "Till now you have got 5 purchased donations" },
-              { title: "Pending-Purchases", count: 12, desc: "Till now you have 12 units of donations pending" }]
-              .map((card, index) => (
-                <div className="card-single" key={index}>
-                  <div className="card-flex">
-                    <div className="card-info">
-                      <div className="card-head">
-                        <span>{card.title}</span>
-                        <small>Number of {card.title.toLowerCase()}</small>
-                      </div>
-                      <h2>{card.count}</h2>
-                      <small>{card.desc}</small>
+              { title: "Pending-Purchases", count: 12, desc: "Till now you have 12 units of donations pending" }].map((card, index) => (
+              <div className="card-single" key={index}>
+                <div className="card-flex">
+                  <div className="card-info">
+                    <div className="card-head">
+                      <span>{card.title}</span>
+                      <small>Number of {card.title.toLowerCase()}</small>
                     </div>
-                    <div className="card-chart">
-                      <span className="bx bx-line-chart"></span>
-                    </div>
+                    <h2>{card.count}</h2>
+                    <small>{card.desc}</small>
+                  </div>
+                  <div className="card-chart">
+                    <span className="bx bx-line-chart"></span>
                   </div>
                 </div>
-              ))}
+              </div>
+            ))}
           </div>
 
           <div className="jobs-grid">
@@ -267,30 +267,29 @@ const UserDashboardHotel = () => {
                     {[{ name: "Rafy Bhuiyan", status: "donated" },
                       { name: "Israt Jahan", status: "donate" },
                       { name: "Jerin Neon", status: "donated" },
-                      { name: "Abdur Rahman", status: "donate" }]
-                      .map((donor, index) => (
-                        <tr key={index}>
-                          <td>
-                            <div>
-                              <span className={`indicator ${index % 2 === 0 ? "" : "even"}`}></span>
-                            </div>
-                          </td>
-                          <td>
-                            <div>{donor.name}</div>
-                          </td>
-                          <td>
-                            <div>Menu</div>
-                          </td>
-                          <td>
-                            <div>Description</div>
-                          </td>
-                          <td>
-                            <div>
-                              <button>{donor.status}</button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
+                      { name: "Abdur Rahman", status: "donate" }].map((donor, index) => (
+                      <tr key={index}>
+                        <td>
+                          <div>
+                            <span className={`indicator ${index % 2 === 0 ? "" : "even"}`}></span>
+                          </div>
+                        </td>
+                        <td>
+                          <div>{donor.name}</div>
+                        </td>
+                        <td>
+                          <div>Menu</div>
+                        </td>
+                        <td>
+                          <div>Description</div>
+                        </td>
+                        <td>
+                          <div>
+                            <button>{donor.status}</button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -301,7 +300,7 @@ const UserDashboardHotel = () => {
 
       {isPostModalOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200">
+          <div className="bg-white p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">Create Post</h2>
 
             <label className="block mb-2">Email:</label>
@@ -312,9 +311,8 @@ const UserDashboardHotel = () => {
               onChange={handleChange}
               className="w-full p-2 border rounded mb-4"
             />
-            {renderError("email")}
 
-            <label className="block mb-2">Food Title:</label>
+            <label className="block mb-2">Title:</label>
             <input
               type="text"
               name="title"
@@ -322,17 +320,14 @@ const UserDashboardHotel = () => {
               onChange={handleChange}
               className="w-full p-2 border rounded mb-4"
             />
-            {renderError("title")}
 
-            <label className="block mb-2">Image URL:</label>
+            <label className="block mb-2">Upload Image:</label>
             <input
-              type="text"
-              name="img"
-              value={postData.img}
-              onChange={handleChange}
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
               className="w-full p-2 border rounded mb-4"
             />
-            {renderError("img")}
 
             <label className="block mb-2">Description:</label>
             <textarea
@@ -341,7 +336,6 @@ const UserDashboardHotel = () => {
               onChange={handleChange}
               className="w-full p-2 border rounded mb-4"
             ></textarea>
-            {renderError("description")}
 
             <label className="block mb-2">Price:</label>
             <input
@@ -351,7 +345,6 @@ const UserDashboardHotel = () => {
               onChange={handleChange}
               className="w-full p-2 border rounded mb-4"
             />
-            {renderError("price")}
 
             <label className="block mb-2">Address:</label>
             <input
@@ -361,9 +354,8 @@ const UserDashboardHotel = () => {
               onChange={handleChange}
               className="w-full p-2 border rounded mb-4"
             />
-            {renderError("address")}
 
-            <label className="block mb-2">Additional Info:</label>
+            <label className="block mb-2">Additional:</label>
             <textarea
               name="additional"
               value={postData.additional}
@@ -376,14 +368,18 @@ const UserDashboardHotel = () => {
             <div className="flex justify-between">
               <button
                 onClick={handleCloseModal}
-                className="bg-transparent text-white px-4 py-2 rounded border border-white-700 hover:bg-gray-700 transition-all duration-300"
+                className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700 transition-all duration-300"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSubmitPost}
                 disabled={isSubmitting || !isFormValid()}
-                className="bg-transparent text-white px-4 py-2 rounded border border-white-700 hover:bg-gray-700 transition-all duration-300"
+                className={`px-4 py-2 rounded border transition-all duration-300 ${
+                  isSubmitting || !isFormValid()
+                    ? "bg-gray-500 cursor-not-allowed"
+                    : "bg-gray-600 hover:bg-blue-700"
+                }`}
               >
                 {isSubmitting ? "Submitting..." : "Create Post"}
               </button>
