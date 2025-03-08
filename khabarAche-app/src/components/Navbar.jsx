@@ -40,7 +40,9 @@ const Navbar = () => {
       <div className="container px-10 mx-auto relative lg:text-sm">
         <div className="flex justify-between items-center">
           <div className="flex items-center flex-shrink-0">
-            <img className="h-20 w-20 mr-2" src={logo} alt="Logo" />
+            <Link to="/">
+              <img src={logo} height="100px" width="70px" alt="Logo" />
+            </Link>
             <span className="text-xl tracking-tight bg-gradient-to-r from-orange-500 to-orange-800 text-transparent bg-clip-text">
               KHABAR_ACHE?
             </span>

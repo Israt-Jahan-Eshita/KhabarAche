@@ -29,7 +29,9 @@ const UserDashboard = () => {
       <div className="sidebar">
         <div className="sidebar-brand">
           <div className="brand-flex">
+          <Link to="/">
             <img src={logo} height="100px" width="70px" alt="Logo" />
+            </Link>
             <div className="brand-icons">
               <span className="bx bx-bell"></span>
               <span
@@ -38,7 +40,6 @@ const UserDashboard = () => {
               ></span>
               {dropdownVisible && (
                 <div className="dropdown-menu">
-                  <Link to="/profile">Profile</Link>
                   <Link to="/report">Report</Link>
                   <button onClick={handleLogout}>Logout</button>
                 </div>
@@ -117,7 +118,7 @@ const UserDashboard = () => {
           <div className="header-icons">
             <span className="bx bx-search"></span>
             <span className="bx bx-bookmark"></span>
-            <span className="bx bx-message"></span>
+            <Link to="/Chat" className="text-xl"><span className="bx bx-message"></span></Link>
           </div>
         </header>
 

@@ -7,6 +7,7 @@ import Registerpage from "../src/components/registerpage";
 import Calendar from "../src/components/Calender";
 import Userdashboard from "../src/components/userdashboard";
 import Userdashboardhotel from "../src/components/userdashboardhotel";
+import Chat from "../src/components/ChatPage";
 import "../src/components/loginpage.css";
 import "../src/components/userdashboard.css";
 import Report from "../src/components/Report";
@@ -26,6 +27,7 @@ const App = () => {
           <Route path="/Calender" element={<Calendar />} />
           <Route path="/report" element={<Report />} />
           <Route path="/UserPosts" element={<UserPosts />} />
+          <Route path="/Chat" element={<Chat/>} />
         </Routes>
       </div>
     </Router>
