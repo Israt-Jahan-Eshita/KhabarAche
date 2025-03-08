@@ -12,8 +12,9 @@ const Menu = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
-  const [comments, setComments] = useState([]); 
-  const [newComment, setNewComment] = useState(""); 
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
+  const modalRef = useRef(null);
 
   useEffect(() => {
     const fetchFoods = async () => {
@@ -37,7 +38,18 @@ const Menu = () => {
 
     window.addEventListener("resize", handleResize);
 
-    return () => window.removeEventListener("resize", handleResize);
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        closeModal();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   const fetchComments = async (foodId) => {
@@ -55,8 +67,8 @@ const Menu = () => {
         await axios.post(`http://localhost:4004/api/posts/${selectedItem.id}/comments`, {
           content: newComment,
         });
-        setNewComment(""); 
-        fetchComments(selectedItem.id); 
+        setNewComment("");
+        fetchComments(selectedItem.id);
       } catch (err) {
         console.error("Failed to add comment:", err);
       }
@@ -77,12 +89,12 @@ const Menu = () => {
 
   const openModal = (item) => {
     setSelectedItem(item);
-    fetchComments(item.id); 
+    fetchComments(item.id);
   };
-  
+
   const closeModal = () => {
     setSelectedItem(null);
-    setComments([]); 
+    setComments([]);
   };
 
   return (
@@ -138,7 +150,7 @@ const Menu = () => {
 
       {selectedItem && (
         <div className="menu-modal">
-          <div className="menu-modal-content">
+          <div className="menu-modal-content" ref={modalRef}>
             <button
               onClick={closeModal}
               className="menu-modal-close"
