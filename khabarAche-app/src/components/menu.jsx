@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import axios from "axios";
 import MenuCard from "../components/menucard";
+import "./Menu.css";
 
 const Menu = () => {
   const scrollRef = useRef(null);
@@ -10,7 +11,9 @@ const Menu = () => {
   const [foodItems, setFoodItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isMobile, setIsMobile] = useState(false); 
+  const [isMobile, setIsMobile] = useState(false);
+  const [comments, setComments] = useState([]); 
+  const [newComment, setNewComment] = useState(""); 
 
   useEffect(() => {
     const fetchFoods = async () => {
@@ -26,59 +29,84 @@ const Menu = () => {
 
     fetchFoods();
 
-
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768); 
+      setIsMobile(window.innerWidth < 768);
     };
 
-
     handleResize();
-
 
     window.addEventListener("resize", handleResize);
 
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const fetchComments = async (foodId) => {
+    try {
+      const response = await axios.get(`http://localhost:4004/api/posts/${foodId}/comments`);
+      setComments(response.data);
+    } catch (err) {
+      console.error("Failed to fetch comments:", err);
+    }
+  };
+
+  const addComment = async () => {
+    if (newComment.trim()) {
+      try {
+        await axios.post(`http://localhost:4004/api/posts/${selectedItem.id}/comments`, {
+          content: newComment,
+        });
+        setNewComment(""); 
+        fetchComments(selectedItem.id); 
+      } catch (err) {
+        console.error("Failed to add comment:", err);
+      }
+    }
+  };
+
   const scroll = (direction) => {
     if (scrollRef.current) {
       const { current } = scrollRef;
       const scrollAmount = isMobile ? 200 : 300;
       current.scrollTo({
-        left: current.scrollLeft + (direction === "left" ? -scrollAmount : scrollAmount),
+        left:
+          current.scrollLeft + (direction === "left" ? -scrollAmount : scrollAmount),
         behavior: "smooth",
       });
     }
   };
 
-  const openModal = (item) => setSelectedItem(item);
-  const closeModal = () => setSelectedItem(null);
+  const openModal = (item) => {
+    setSelectedItem(item);
+    fetchComments(item.id); 
+  };
+  
+  const closeModal = () => {
+    setSelectedItem(null);
+    setComments([]); 
+  };
 
   return (
-    <div className="flex flex-col lg:px-20 sm:px-10">
-      <h1 className="font-semibold text-center text-4xl mt-24 mb-8">
-        Today's Available Foods
-      </h1>
+    <div className="menu-container">
+      <h1 className="menu-title">Today's Available Foods</h1>
 
       {loading ? (
-        <p className="text-center text-lg">Loading...</p>
+        <p className="menu-loading">Loading...</p>
       ) : error ? (
-        <p className="text-center text-red-500">{error}</p>
+        <p className="menu-error">{error}</p>
       ) : (
-        <div className="relative bg-white p-10 rounded-lg shadow-lg">
+        <div className="menu-scroll-container">
           <button
             onClick={() => scroll("left")}
-            className="hover:bg-black transition absolute left-0 top-1/2 -translate-y-1/2 bg-white/30 backdrop-blur-lg p-3 rounded-full shadow-lg z-10"
-            aria-label="Scroll left" 
+            className="menu-scroll-button left"
+            aria-label="Scroll left"
           >
             <FaChevronLeft size={24} />
           </button>
 
           <motion.div
             ref={scrollRef}
-            className="flex gap-4 overflow-x-auto flex-nowrap scrollbar-hide px- py-2 rounded-lg"
+            className="menu-items-container"
             whileTap={{ cursor: "grabbing" }}
-            style={{ scrollBehavior: "smooth" }}
           >
             {foodItems.length > 0 ? (
               foodItems.map((item, index) => (
@@ -92,7 +120,7 @@ const Menu = () => {
                 />
               ))
             ) : (
-              <p className="text-center w-full text-lg text-gray-500">
+              <p className="menu-no-items">
                 No food available at the moment.
               </p>
             )}
@@ -100,8 +128,8 @@ const Menu = () => {
 
           <button
             onClick={() => scroll("right")}
-            className="hover:bg-black transition absolute right-0 top-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-lg p-3 rounded-full shadow-lg z-10"
-            aria-label="Scroll right" // Accessibility
+            className="menu-scroll-button right"
+            aria-label="Scroll right"
           >
             <FaChevronRight size={24} />
           </button>
@@ -109,35 +137,62 @@ const Menu = () => {
       )}
 
       {selectedItem && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg lg:w-3/5 max-h-[80vh] overflow-y-auto scrollbar-thin scrollbar-thumb-transparent hover:scrollbar-thumb-gray-900 flex flex-col lg:flex-row items-center lg:items-start relative">
+        <div className="menu-modal">
+          <div className="menu-modal-content">
             <button
               onClick={closeModal}
-              className="absolute top-4 right-4 text-white text-2xl hover:text-red-500 transition"
-              aria-label="Close modal" 
+              className="menu-modal-close"
+              aria-label="Close modal"
             >
               ✖
             </button>
             <img
               src={selectedItem.imageURL}
               alt={selectedItem.title}
-              className="sm:w-2/5 md:w-2/3 lg:w-1/3 rounded-md"
+              className="menu-modal-image"
             />
-            <div className="lg:ml-6 mt-4 lg:mt-0 flex flex-col">
-              <h2 className="text-2xl font-bold">{selectedItem.title}</h2>
-              <p className="text-white mt-2">{selectedItem.description}</p>
-              <div className="flex justify-between items-center gap-4 mt-4">
-                <div className="flex gap-2">
-                  <button className="px-3 text-sm border-2 border-black bg-transparent hover:text-orange-500 transition-all rounded-lg">
+            <div className="menu-modal-details">
+              <h2 className="menu-modal-title">{selectedItem.title}</h2>
+              <p className="menu-modal-description">{selectedItem.description}</p>
+              <div className="menu-modal-actions">
+                <div className="menu-modal-action-buttons">
+                  <button className="menu-modal-button">
                     Like
                   </button>
-                  <button className="px-3 text-sm border-2 border-black bg-transparent hover:text-orange-500 transition-all rounded-lg">
+                  <button className="menu-modal-button">
                     Comment
                   </button>
                 </div>
-                <span className="border-2 border-black bg-black text-white hover:text-orange-500 transition-all cursor-pointer p-2 rounded-lg">
+                <span className="menu-modal-cart">
                   Add to Cart
                 </span>
+              </div>
+            </div>
+
+            <div className="menu-modal-comments">
+              <h3>Comments</h3>
+              {comments.length > 0 ? (
+                <div className="menu-modal-comment-list">
+                  {comments.map((comment, index) => (
+                    <div key={index} className="menu-modal-comment">
+                      <p className="menu-modal-comment-author">{comment.author}</p>
+                      <p className="menu-modal-comment-text">{comment.content}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="menu-modal-no-comments">No comments yet.</p>
+              )}
+              <div className="menu-modal-comment-form">
+                <textarea
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  placeholder="Add a comment..."
+                  className="menu-modal-comment-input"
+                />
+                <button onClick={addComment} className="menu-modal-comment-submit">
+                  Submit
+                </button>
               </div>
             </div>
           </div>

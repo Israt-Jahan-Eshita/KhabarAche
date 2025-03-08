@@ -1,0 +1,116 @@
+  .menu-card {
+    background-color: #333333;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    transition: transform 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: 550px;
+    width: 100%;
+    min-width: 250px;
+  }
+  
+  .menu-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+  }
+  
+  .menu-card-image {
+    position: relative;
+    overflow: hidden;
+    height: 150px;
+  }
+  
+  .menu-card-image-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .menu-card:hover .menu-card-image-img {
+    transform: scale(1.1);
+  }
+  
+  .menu-card-content {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+  
+  .menu-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+  
+  .menu-card-title {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .menu-card-value-free {
+    background-color: #4caf50;
+    color: #fff;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 5px;
+  }
+  
+  .menu-card-value {
+    color: #fff;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 5px;
+  }
+  
+  .menu-card-description {
+    font-size: 0.75rem;
+    color: #ddd;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    height: 2.7em; 
+  }
+  
+  .menu-card-actions {
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 0.75rem;
+    border-top: 1px solid #555;
+    min-height: 40px;
+  }
+  
+  .menu-card-button,
+  .menu-card-cart {
+    background: none;
+    border: none;
+    font-size: 0.7rem;
+    color: #999;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    padding: 0.25rem 0.5rem;
+    border-radius: 5px;
+    white-space: nowrap;
+  }
+  
+  .menu-card-button:hover,
+  .menu-card-cart:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  

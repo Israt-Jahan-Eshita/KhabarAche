@@ -1,0 +1,55 @@
+/* UserPosts.css */
+.user-posts-container {
+    background-color: #121212; /* Darker background */
+    color: #ffffff;
+    padding: 2rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Arial', sans-serif; 
+  }
+  
+  .user-posts-title {
+    font-size: 2.5rem;
+    font-weight: 600; 
+    margin-bottom: 2rem;
+    text-align: center;
+    color: #f0f0f0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); 
+  }
+  
+  .user-posts-loading,
+  .user-posts-error {
+    font-size: 1.2rem;
+    color: #ff6666; 
+    text-align: center;
+  }
+  
+  .user-posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    width: 100%;
+    max-width: 1200px;
+    justify-content: center;
+    padding: 1rem;
+    border-radius: 15px;
+    background-color: rgba(255, 255, 255, 0.05); 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+  }
+  
+ 
+  @media (min-width: 768px) {
+    .user-posts-container {
+      padding: 3rem;
+    }
+  
+    .user-posts-title {
+      font-size: 3rem;
+    }
+  
+    .user-posts-grid {
+      padding: 2rem;
+    }
+  }

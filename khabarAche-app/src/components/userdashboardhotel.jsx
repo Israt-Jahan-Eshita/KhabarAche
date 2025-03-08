@@ -72,7 +72,7 @@ const UserDashboardHotel = () => {
       }
 
       const postResponse = await axios.post(
-        "http://localhost:4003/api/posts",
+        "http://localhost:4004/api/posts",
         { ...postData, imageURL },
         { headers: { "Content-Type": "application/json" } }
       );
@@ -83,7 +83,9 @@ const UserDashboardHotel = () => {
       }
     } catch (err) {
       console.error("Post error:", err);
-      setError(err.response?.data?.message || err.message || "An error occurred.");
+      setError(
+        err.response?.data?.message || err.message || "An error occurred."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -91,7 +93,8 @@ const UserDashboardHotel = () => {
 
   const isFormValid = () => {
     return (
-      Object.values(postData).every((field) => field.trim() !== "") || selectedFile !== null
+      Object.values(postData).every((field) => field.trim() !== "") ||
+      selectedFile !== null
     );
   };
 
@@ -144,7 +147,7 @@ const UserDashboardHotel = () => {
                   <span className="bxx"> Finance</span>
                 </span>
               </Link>
-              <Link to="/UserPosts">
+              <Link to={`/UserPosts?userId=${user.id}`}>
                 <span className="bx bx-pie-chart">
                   <span className="bxx"> My Posts</span>
                 </span>
@@ -211,9 +214,23 @@ const UserDashboardHotel = () => {
           </div>
 
           <div className="cards">
-            {[{ title: "Donation", count: 17, desc: "Till now you have encountered 17 donations" },
-              { title: "Purchases", count: 5, desc: "Till now you have got 5 purchased donations" },
-              { title: "Pending-Purchases", count: 12, desc: "Till now you have 12 units of donations pending" }].map((card, index) => (
+            {[
+              {
+                title: "Donation",
+                count: 17,
+                desc: "Till now you have encountered 17 donations",
+              },
+              {
+                title: "Purchases",
+                count: 5,
+                desc: "Till now you have got 5 purchased donations",
+              },
+              {
+                title: "Pending-Purchases",
+                count: 12,
+                desc: "Till now you have 12 units of donations pending",
+              },
+            ].map((card, index) => (
               <div className="card-single" key={index}>
                 <div className="card-flex">
                   <div className="card-info">
@@ -244,7 +261,8 @@ const UserDashboardHotel = () => {
                 </div>
                 <div className="analytics-note">
                   <small>
-                    You have the ability to download PDF files that contain details or records of the donations you have made.
+                    You have the ability to download PDF files that contain
+                    details or records of the donations you have made.
                   </small>
                 </div>
               </div>
@@ -264,14 +282,20 @@ const UserDashboardHotel = () => {
               <div className="table-responsive">
                 <table width="100%">
                   <tbody>
-                    {[{ name: "Rafy Bhuiyan", status: "donated" },
+                    {[
+                      { name: "Rafy Bhuiyan", status: "donated" },
                       { name: "Israt Jahan", status: "donate" },
                       { name: "Jerin Neon", status: "donated" },
-                      { name: "Abdur Rahman", status: "donate" }].map((donor, index) => (
+                      { name: "Abdur Rahman", status: "donate" },
+                    ].map((donor, index) => (
                       <tr key={index}>
                         <td>
                           <div>
-                            <span className={`indicator ${index % 2 === 0 ? "" : "even"}`}></span>
+                            <span
+                              className={`indicator ${
+                                index % 2 === 0 ? "" : "even"
+                              }`}
+                            ></span>
                           </div>
                         </td>
                         <td>
