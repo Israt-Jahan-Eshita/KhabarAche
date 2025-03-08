@@ -63,7 +63,7 @@ const UserDashboardHotel = () => {
         formData.append("image", selectedFile);
 
         const uploadResponse = await axios.post(
-          "http://localhost:4003/api/upload",
+          "http://localhost:4004/api/upload",
           formData,
           { headers: { "Content-Type": "multipart/form-data" } }
         );
@@ -139,16 +139,16 @@ const UserDashboardHotel = () => {
                   <span className="bxx"> Home</span>
                 </span>
               </Link>
-              <li>
-                <a href="#">
-                  <span className="bx bx-line-chart"></span> Finance
-                </a>
-              </li>
-              <li>
-                <a href="#">
-                  <span className="bx bx-pie-chart"></span> Analytics
-                </a>
-              </li>
+              <Link to="/mypost">
+                <span className="bx bx-line-chart">
+                  <span className="bxx"> Finance</span>
+                </span>
+              </Link>
+              <Link to="/UserPosts">
+                <span className="bx bx-pie-chart">
+                  <span className="bxx"> My Posts</span>
+                </span>
+              </Link>
             </ul>
 
             <div className="menu-head">

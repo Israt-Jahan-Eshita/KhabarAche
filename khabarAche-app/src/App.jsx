@@ -10,6 +10,7 @@ import Userdashboardhotel from "../src/components/userdashboardhotel";
 import "../src/components/loginpage.css";
 import "../src/components/userdashboard.css";
 import Report from "../src/components/Report";
+import UserPosts from "../src/components/UserPosts";
 //import { Calendar } from "lucide-react";
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
           <Route path="/Homepage" element={<Homepage />} />
           <Route path="/Calender" element={<Calendar />} />
           <Route path="/report" element={<Report />} />
+          <Route path="/UserPosts" element={<UserPosts />} />
         </Routes>
       </div>
     </Router>

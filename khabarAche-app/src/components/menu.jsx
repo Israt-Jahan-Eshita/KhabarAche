@@ -10,13 +10,13 @@ const Menu = () => {
   const [foodItems, setFoodItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isMobile, setIsMobile] = useState(false); 
 
- 
   useEffect(() => {
     const fetchFoods = async () => {
       try {
-        const response = await axios.get("http://localhost:4003/api/posts");
-        setFoodItems(response.data); 
+        const response = await axios.get("http://localhost:4004/api/posts");
+        setFoodItems(response.data);
       } catch (err) {
         setError("Failed to load available foods.");
       } finally {
@@ -25,13 +25,27 @@ const Menu = () => {
     };
 
     fetchFoods();
+
+
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768); 
+    };
+
+
+    handleResize();
+
+
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const scroll = (direction) => {
     if (scrollRef.current) {
       const { current } = scrollRef;
+      const scrollAmount = isMobile ? 200 : 300;
       current.scrollTo({
-        left: current.scrollLeft + (direction === "left" ? -300 : 300),
+        left: current.scrollLeft + (direction === "left" ? -scrollAmount : scrollAmount),
         behavior: "smooth",
       });
     }
@@ -41,7 +55,7 @@ const Menu = () => {
   const closeModal = () => setSelectedItem(null);
 
   return (
-    <div className="flex flex-col justify-center lg:px-0">
+    <div className="flex flex-col lg:px-20 sm:px-10">
       <h1 className="font-semibold text-center text-4xl mt-24 mb-8">
         Today's Available Foods
       </h1>
@@ -51,18 +65,20 @@ const Menu = () => {
       ) : error ? (
         <p className="text-center text-red-500">{error}</p>
       ) : (
-        <div className="relative bg-white p-6 rounded-lg shadow-lg">
+        <div className="relative bg-white p-10 rounded-lg shadow-lg">
           <button
             onClick={() => scroll("left")}
             className="hover:bg-black transition absolute left-0 top-1/2 -translate-y-1/2 bg-white/30 backdrop-blur-lg p-3 rounded-full shadow-lg z-10"
+            aria-label="Scroll left" 
           >
             <FaChevronLeft size={24} />
           </button>
 
           <motion.div
             ref={scrollRef}
-            className="flex gap-6 overflow-x-auto flex-nowrap scrollbar-hide px-5 py-2 rounded-lg"
+            className="flex gap-4 overflow-x-auto flex-nowrap scrollbar-hide px- py-2 rounded-lg"
             whileTap={{ cursor: "grabbing" }}
+            style={{ scrollBehavior: "smooth" }}
           >
             {foodItems.length > 0 ? (
               foodItems.map((item, index) => (
@@ -85,6 +101,7 @@ const Menu = () => {
           <button
             onClick={() => scroll("right")}
             className="hover:bg-black transition absolute right-0 top-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-lg p-3 rounded-full shadow-lg z-10"
+            aria-label="Scroll right" // Accessibility
           >
             <FaChevronRight size={24} />
           </button>
@@ -97,6 +114,7 @@ const Menu = () => {
             <button
               onClick={closeModal}
               className="absolute top-4 right-4 text-white text-2xl hover:text-red-500 transition"
+              aria-label="Close modal" 
             >
               ✖
             </button>

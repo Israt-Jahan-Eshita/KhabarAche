@@ -10,7 +10,7 @@ import uploadRoutes from "./routes/upload.js";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 4003;
+const PORT = process.env.PORT || 4004;
 const URI = process.env.MONGO_URI;
 
 
