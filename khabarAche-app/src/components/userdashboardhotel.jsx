@@ -23,12 +23,14 @@ const UserDashboardHotel = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState(null); // New state for success message
   const navigate = useNavigate();
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser) {
       setUser(storedUser);
+      setPostData((prevData) => ({ ...prevData, email: storedUser.email }));
     }
   }, []);
 
@@ -54,6 +56,7 @@ const UserDashboardHotel = () => {
 
     setIsSubmitting(true);
     setError(null);
+    setSuccessMessage(null); 
 
     try {
       let imageURL = "";
@@ -77,9 +80,19 @@ const UserDashboardHotel = () => {
         { headers: { "Content-Type": "application/json" } }
       );
 
-      if (postResponse.status === 200) {
-        alert("Post Created Successfully!");
-        handleCloseModal();
+      if ([200, 201].includes(postResponse.status)) {
+        setSuccessMessage("Post Created Successfully!"); 
+
+        setTimeout(() => {
+          handleCloseModal();
+          navigate("/Homepage");
+        }, 2000);
+      } else {
+        console.error(
+          "Failed to create post. Status code:",
+          postResponse.status
+        );
+        setError(`Failed to create post. Status code: ${postResponse.status}`);
       }
     } catch (err) {
       console.error("Post error:", err);
@@ -153,7 +166,6 @@ const UserDashboardHotel = () => {
                 </span>
               </Link>
             </ul>
-
             <div className="menu-head">
               <span>Applications</span>
             </div>
@@ -270,12 +282,11 @@ const UserDashboardHotel = () => {
                 <button>Download PDF</button>
               </div>
             </div>
-
             <div className="jobs">
               <h2>
-                Donate{" "}
+                Donate
                 <small>
-                  See all donation orders{" "}
+                  See all donation orders
                   <span className="bx bx-right-arrow-alt"></span>
                 </small>
               </h2>
@@ -326,16 +337,14 @@ const UserDashboardHotel = () => {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">Create Post</h2>
-
             <label className="block mb-2">Email:</label>
             <input
               type="email"
               name="email"
               value={postData.email}
-              onChange={handleChange}
-              className="w-full p-2 border rounded mb-4"
+              readOnly
+              className="w-full p-2 border rounded mb-4 bg-gray-200"
             />
-
             <label className="block mb-2">Title:</label>
             <input
               type="text"
@@ -344,7 +353,6 @@ const UserDashboardHotel = () => {
               onChange={handleChange}
               className="w-full p-2 border rounded mb-4"
             />
-
             <label className="block mb-2">Upload Image:</label>
             <input
               type="file"
@@ -352,7 +360,6 @@ const UserDashboardHotel = () => {
               onChange={handleFileChange}
               className="w-full p-2 border rounded mb-4"
             />
-
             <label className="block mb-2">Description:</label>
             <textarea
               name="description"
@@ -360,7 +367,6 @@ const UserDashboardHotel = () => {
               onChange={handleChange}
               className="w-full p-2 border rounded mb-4"
             ></textarea>
-
             <label className="block mb-2">Price:</label>
             <input
               type="text"
@@ -369,7 +375,6 @@ const UserDashboardHotel = () => {
               onChange={handleChange}
               className="w-full p-2 border rounded mb-4"
             />
-
             <label className="block mb-2">Address:</label>
             <input
               type="text"
@@ -378,7 +383,6 @@ const UserDashboardHotel = () => {
               onChange={handleChange}
               className="w-full p-2 border rounded mb-4"
             />
-
             <label className="block mb-2">Additional:</label>
             <textarea
               name="additional"
@@ -386,9 +390,11 @@ const UserDashboardHotel = () => {
               onChange={handleChange}
               className="w-full p-2 border rounded mb-4"
             ></textarea>
-
             {error && <div className="text-red-500">{error}</div>}
-
+            {successMessage && (
+              <div className="text-green-500">{successMessage}</div>
+            )}{" "}
+            {/* Success message */}
             <div className="flex justify-between">
               <button
                 onClick={handleCloseModal}
