@@ -192,7 +192,7 @@ const UserDashboardHotel = () => {
           <div className="header-icons">
             <span className="bx bx-search"></span>
             <span className="bx bx-bookmark"></span>
-            <span className="bx bx-message"></span>
+            <Link to="/Chat" className="text-xl"><span className="bx bx-message"></span></Link>
           </div>
         </header>
 
